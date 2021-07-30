@@ -30,7 +30,6 @@ class SiameseNetwork(nn.Module):
             )
 
     def forward(self, images: torch.Tensor):
-        self.train()
         return self.siamese_net(images)
 
     def encode_samples(self, images: torch.Tensor):
