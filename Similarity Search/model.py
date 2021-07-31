@@ -38,7 +38,8 @@ class SiameseNetwork(nn.Module):
         :param images: image tensors to be encoded
         :return: the embeddings of the images as a tensor
         """
-        self.eval()  # Put the network on eval mode
+        if images.ndim == 3:
+            images = images.unsqueeze(0)
         return self(images)
 
     def get_network(self):
