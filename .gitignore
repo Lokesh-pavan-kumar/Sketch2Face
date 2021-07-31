@@ -139,3 +139,5 @@ cython_debug/
 
 # Specific files, folders
 .idea
+Similarity Search/Resnet50-0.587L.pth.tar
+Similarity Search/data
