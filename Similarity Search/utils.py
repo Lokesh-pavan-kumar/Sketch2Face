@@ -21,6 +21,7 @@ def train_fn(network: torch.nn.Module, criterion: torch.nn.Module, optimizer: to
         positives = positives.to(device)
 
         # Get the encoded representation
+        assert network.training is True
         anc_embeddings = network(anchors)
         pos_embeddings = network(positives)
 

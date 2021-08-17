@@ -36,7 +36,7 @@ siamese_ds = SiameseDataset(root / "sketches", root / "photos", transform=transf
 siamese_dl = DataLoader(siamese_ds, bs, shuffle=True)
 
 encoder_network = resnet50(True)
-network = SiameseNetwork(encoder_network=encoder_network, emb_dim=emb_dim, rate=0.6, freeze=freeze).to(device)
+network = SiameseNetwork(encoder_network=encoder_network, emb_dim=emb_dim, freeze=freeze).to(device)
 optimizer = optim.Adam(network.parameters(), lr=lr)
 loss_fn = ContrastiveLoss(alpha=alpha, device=device)
 

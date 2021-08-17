@@ -45,4 +45,4 @@ class ContrastiveLoss(nn.Module):
         loss2 = torch.maximum(closest_neg - similarity_anc_pos.view(bs, 1) + self.alpha, torch.tensor(0))
         loss = loss1 + loss2
 
-        return torch.sum(loss)
+        return torch.mean(loss)

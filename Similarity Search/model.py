@@ -5,16 +5,14 @@ from typing import Union
 
 class SiameseNetwork(nn.Module):
     def __init__(self, encoder_network: nn.Module = None, emb_dim: int = 512,
-                 freeze: bool = False, rate: float = 0.6) -> None:
+                 freeze: bool = False) -> None:
         """
         :param encoder_network: pretrained network that is used in the siamese model
         :param emb_dim: dimensions of the image embeddings
         :param freeze: boolean stating whether or not to freeze the pretrained network
-        :param rate: dropout rate used in the network
         """
         super().__init__()
         self.emb_dim = emb_dim
-        self.rate = rate
         if encoder_network is None:
             self.siamese_net = self.get_network()
         else:
@@ -24,22 +22,24 @@ class SiameseNetwork(nn.Module):
             self.encoder_layers = list(encoder_network.children())
             self.siamese_net = nn.Sequential(
                 *self.encoder_layers[:-1],  # Output = [2048, 1, 1]
-                nn.Dropout2d(self.rate),
-                nn.Conv2d(2048, emb_dim * 2, (1, 1)),
-                nn.Flatten(),
-                nn.Linear(emb_dim * 2, emb_dim)
+                nn.Conv2d(2048, emb_dim // 2, (1, 1)),
+                nn.Conv2d(emb_dim // 2, emb_dim, (1, 1)),
+                nn.Flatten()
             )
 
-    def forward(self, images: torch.Tensor):
+    def forward(self, images: torch.Tensor):  # Before running make sure the network is in train mode
         return self.siamese_net(images)
 
+    @torch.no_grad()  # No need to calculate any gradients
     def encode_samples(self, images: torch.Tensor):
         """
         :param images: image tensors to be encoded
         :return: the embeddings of the images as a tensor
         """
+        self.eval()  # Change to eval mode
         if images.ndim == 3:
             images = images.unsqueeze(0)
+        assert self.training is False
         return self(images)
 
     def get_network(self):
@@ -62,7 +62,7 @@ class SiameseNetwork(nn.Module):
             # Fully connected layers
             nn.Linear(self.emb_dim * 3 * 3, self.emb_dim),
             nn.ReLU(inplace=True),
-            nn.Dropout(self.rate),
+            nn.Dropout(0.6),
             nn.Linear(self.emb_dim, self.emb_dim),
         )
 
