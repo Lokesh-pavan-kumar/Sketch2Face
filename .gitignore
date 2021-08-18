@@ -141,3 +141,6 @@ cython_debug/
 .idea
 Similarity Search/Resnet50-0.587L.pth.tar
 Similarity Search/data
+Generation/dummy.py
+Generation/GeneratorY-7.pth.tar
+Generation/Data/

@@ -17,12 +17,13 @@ def save_network(filename: str, network: nn.Module, optimizer: optim.Optimizer, 
     torch.save(checkpoint, filename)
 
 
-def load_network(filename: str, network: nn.Module, optimizer: optim.Optimizer, lr: float, **kwargs):
+def load_network(filename: str, network: nn.Module, optimizer: optim.Optimizer = None, lr: float = None, **kwargs):
     checkpoint = torch.load(filename, map_location=config.DEVICE)
     network.load_state_dict(checkpoint['network'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = lr
     meta_data = {}
     for param in kwargs:
         if checkpoint.get(param, None) is not None:
@@ -30,7 +31,6 @@ def load_network(filename: str, network: nn.Module, optimizer: optim.Optimizer, 
     print(f'Loaded model from {filename}')
 
     return meta_data
-
 
 
 def save_outputs(sketch: torch.Tensor, digital: torch.Tensor, location: str):
@@ -44,7 +44,6 @@ def save_outputs(sketch: torch.Tensor, digital: torch.Tensor, location: str):
     assert concatenated.ndim == 4
     grid = make_grid(concatenated, nrow=2, normalize=True, pad_value=1, padding=3)
     save_image(grid, location)
-
 
 
 def seed_everything(seed=42):
