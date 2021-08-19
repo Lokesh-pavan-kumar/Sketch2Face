@@ -139,8 +139,9 @@ cython_debug/
 
 # Specific files, folders
 .idea
-Similarity Search/Resnet50-0.587L.pth.tar
+Similarity Search/Resnet-50-250.pth.tar
+Similarity Search/Resnet-50-Fake250.pth.tar
 Similarity Search/data
 Generation/dummy.py
-Generation/GeneratorY-7.pth.tar
+Generation/Generator.pth.tar
 Generation/Data/
