@@ -22,9 +22,8 @@ class SiameseNetwork(nn.Module):
             self.encoder_layers = list(encoder_network.children())
             self.siamese_net = nn.Sequential(
                 *self.encoder_layers[:-1],  # Output = [2048, 1, 1]
-                nn.Conv2d(2048, emb_dim // 2, (1, 1)),
-                nn.Conv2d(emb_dim // 2, emb_dim, (1, 1)),
-                nn.Flatten()
+                nn.Flatten(),
+                nn.Linear(2048, emb_dim)
             )
 
     def forward(self, images: torch.Tensor):  # Before running make sure the network is in train mode

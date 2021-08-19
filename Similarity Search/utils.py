@@ -59,15 +59,17 @@ def save_network(filename: str, network: torch.nn.Module, optimizer: torch.optim
     torch.save(checkpoint, filename)
 
 
-def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim.Optimizer, lr: float, **kwargs):
-    checkpoint = torch.load(filename)
+def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim.Optimizer = None, lr: float = None, **kwargs):
+    checkpoint = torch.load(filename, map_location="cpu")
     network.load_state_dict(checkpoint['network'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = lr
     meta_data = {}
     for param in kwargs:
         if checkpoint.get(param, None) is not None:
             meta_data[param] = checkpoint[param]
+    print(f'Loaded model from {filename}')
 
     return meta_data
