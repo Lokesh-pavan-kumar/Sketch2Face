@@ -143,6 +143,6 @@ Similarity Search/Resnet-50-250.pth.tar
 Similarity Search/Resnet-50-Fake250.pth.tar
 Similarity Search/data
 Generation/dummy.py
-Generation/Generator.pth.tar
+Generation/Generator*.pth.tar
 Generation/Data/
 Similarity Search/dummy.py

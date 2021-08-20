@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 from typing import Union
+from torchvision.utils import make_grid
 
 
 # # For Reproducible Results
@@ -59,7 +60,8 @@ def save_network(filename: str, network: torch.nn.Module, optimizer: torch.optim
     torch.save(checkpoint, filename)
 
 
-def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim.Optimizer = None, lr: float = None, **kwargs):
+def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim.Optimizer = None, lr: float = None,
+                 **kwargs):
     checkpoint = torch.load(filename, map_location="cpu")
     network.load_state_dict(checkpoint['network'])
     if optimizer is not None:
@@ -73,3 +75,13 @@ def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim
     print(f'Loaded model from {filename}')
 
     return meta_data
+
+
+def show_samples(sketch: torch.Tensor, photos: torch.Tensor, indexes: list, nrow: int):
+    photos = photos[indexes]
+    if sketch.ndim == 3:
+        sketch = sketch.unsqueeze(0)
+    image_tensors = torch.cat([sketch, photos], dim=0)
+    assert image_tensors.ndim == 4
+    grid = make_grid(image_tensors.to("cpu"), nrow=nrow)
+    return grid
