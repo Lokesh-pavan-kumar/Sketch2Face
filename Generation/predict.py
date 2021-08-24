@@ -11,7 +11,7 @@ generator = Generator(3)
 choice = int(input("Enter\n1 - Sketch to Photo\n2 - Photo to Sketch\n"))
 
 if choice == 1:
-    load_network("GeneratorS2F.pth.tar", generator, None, None)
+    load_network("Old Models/GeneratorS2F.pth.tar", generator, None, None)
     transform = T.Compose([
         T.Resize(257),
         T.CenterCrop(256),
@@ -19,7 +19,7 @@ if choice == 1:
         T.ToTensor(),
     ])
 else:
-    load_network("GeneratorF2S.pth.tar", generator, None, None)
+    load_network("Old Models/GeneratorF2S.pth.tar", generator, None, None)
     transform = T.Compose([
         T.Resize(257),
         T.CenterCrop(256),
