@@ -141,7 +141,7 @@ cython_debug/
 .idea
 Similarity Search/Resnet-50-250.pth.tar
 Similarity Search/Resnet-50-Fake250.pth.tar
-Similarity Search/data
+Similarity Search/data/
 Generation/dummy.py
 Generation/Generator*.pth.tar
 Generation/Data/
