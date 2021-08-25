@@ -25,7 +25,7 @@ def index():
 @app.post("/get-similar/")
 def similarity_search(image: UploadFile = File(...), num_matches: int = 5):
     """
-    Takes in an input image (forensic sketch) and the number of matches to return
+    Takes in an input image (forensic sketch) and the number of matches to return.  
     Computes and returns **num_matches** most similar images, similarity value for the input image
     """
     image = transform(Image.open(BytesIO(image.file.read())))  # To torch.Tensor
