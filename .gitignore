@@ -139,11 +139,13 @@ cython_debug/
 
 # Specific files, folders
 .idea
-Similarity Search/Resnet-50-250.pth.tar
-Similarity Search/Resnet-50-Fake250.pth.tar
-Similarity Search/data/
+Similarity/Resnet-50-250.pth.tar
+Similarity/Resnet-50-Fake250.pth.tar
+Similarity/data/
 Generation/dummy.py
 Generation/Generator*.pth.tar
 Generation/Data/
-Similarity Search/dummy.py
+Similarity/dummy.py
 Generation/Old Models/
+Api/Mugshot/
+Api/siamese-traditional-300.pth.tar
