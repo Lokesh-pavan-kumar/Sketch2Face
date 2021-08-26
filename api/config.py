@@ -19,10 +19,9 @@ transform = T.Compose([
 
 # mugshot and embedding file details
 mugshot_path = Path("./Mugshot")
-# names of the images in the mugshot - mugshot_idx.ext
-image_names = [f_name for f_name in sorted(mugshot_path.iterdir(), key=lambda x: int(x.stem.split("_")[1]))]
-emb_loc = Path("./Mugshot/embeddings.pt")  # location of the embedding file
 
+emb_loc = Path("./Mugshot/embeddings.pt")  # location of the embedding file
 
 # misc
 image_exts = [".png", ".jpg", ".jpeg", ".tif", ".bmp"]
+# names of the images in the mugshot - mugshot_idx.ext

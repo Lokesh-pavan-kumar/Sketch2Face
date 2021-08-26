@@ -26,7 +26,7 @@ def add_embedding(network: torch.nn.Module, img_path, out_file: str, device: str
     if sample.ndim == 3:
         sample = sample.unsqueeze(0)
     emb = network.encode_samples(sample).squeeze()
-    emb = emb / torch.norm(emb, dim=1)
+    emb = emb / torch.norm(emb, dim=-1)
     if emb.ndim == 1:
         emb = emb.unsqueeze(0)
     embeddings = torch.load(out_file)
@@ -39,8 +39,10 @@ def write_embeddings(network: torch.nn.Module, images: List, out_file: str, devi
     network = network.to(device)
     network.eval()
     embeddings = network.encode_samples(tensor_images).squeeze()
-    embeddings = embeddings / torch.norm(embeddings, dim=1, keepdim=True)
-    assert embeddings.ndim <= 2
+    embeddings = embeddings / torch.norm(embeddings, dim=-1, keepdim=True)
+    if embeddings.ndim == 1:
+        embeddings = embeddings.unsqueeze(0)
+    assert embeddings.ndim == 2  # in the file embeddings should be of shape (n, emb_dim)
     torch.save(embeddings, out_file + ".pt")
     return
 
