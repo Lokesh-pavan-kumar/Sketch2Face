@@ -148,4 +148,5 @@ generation/Data/
 similarity/dummy.py
 generation/Old Models/
 api/Mugshot/
-api/siamese-traditional-300.pth.tar
+api/siamese_models/
+api/generator_models/
