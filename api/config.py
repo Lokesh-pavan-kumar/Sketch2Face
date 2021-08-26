@@ -1,8 +1,8 @@
 import torch
 import torchvision.transforms as T
-from torchvision.utils import save_image
 from torchvision.models import resnet50
 from model import Grayscale, SiameseNetwork, load_network
+from typing import Union
 from generator import Generator
 from pathlib import Path
 
@@ -42,7 +42,7 @@ emb_loc = Path("./Mugshot/embeddings.pt")  # location of the embedding file
 image_exts = [".png", ".jpg", ".jpeg", ".tif", ".bmp"]
 
 
-def preprocess(image, mode: int):
+def preprocess(image, mode: Union[int, str]):
     """
     Takes in an input image and converts it to a different domain using the appropriate generator network
     :param image: input image
@@ -55,10 +55,10 @@ def preprocess(image, mode: int):
     img_tensor = transform(image)  # PIL to torch.Tensor
     if img_tensor.ndim == 3:
         img_tensor = img_tensor.unsqueeze(0)  # Add fake batch-dim
-    if mode == 0:  # Sketch to Face
+    if mode == 0 or mode == "siamese-face":  # Sketch to Face
         generator_s2f.eval()
         processed = generator_s2f(img_tensor).squeeze()
-    elif mode == 1:  # Face to Sketch
+    elif mode == 1 or mode == "siamese-sketch":  # Face to Sketch
         generator_f2s.eval()
         processed = generator_f2s(img_tensor).squeeze()
     else:
@@ -70,7 +70,6 @@ def preprocess(image, mode: int):
 def get_embedding(image, transform_image: bool = False, transformation: int = None):
     if transform_image:
         dst = preprocess(image, transformation)
-        save_image(dst, "sample.png")
         if dst.ndim == 3:
             dst = dst.unsqueeze(0)
         embedding = siamese_sketch.encode_samples(dst) if transformation == 0 else siamese_photo.encode_samples(dst)

@@ -3,12 +3,20 @@ from fastapi import FastAPI, BackgroundTasks
 from fastapi import File, UploadFile
 from io import BytesIO
 from PIL import Image
+from enum import Enum
 
 from utils import save_embeddings, add_embedding, calc_similarity
-from config import transform, siamese_normal, mugshot_path, emb_loc, image_exts, get_embedding
+from config import siamese_normal, mugshot_path, emb_loc, image_exts, get_embedding
 
 app = FastAPI(title="Sketch2Face",
               description="API Endpoints for Sketch2Face")
+
+
+class Strategy(str, Enum):
+    normal = "normal"
+    face2face = "siamese-face"
+    sketch2sketch = "siamese-sketch"
+    ensemble = "siamese-ensemble"
 
 
 @app.get("/")
@@ -23,7 +31,7 @@ def index():
 
 # TODO: Add support for multiple/ensemble models
 @app.post("/get-similar/")
-def similarity_search(image: UploadFile = File(...), num_matches: int = 5):
+def similarity_search(*, image: UploadFile = File(...), strategy: Strategy, num_matches: int = 5):
     """
     Takes in an input image (forensic sketch) and the number of matches to return.  
     Computes and returns **num_matches** most similar images, similarity value for the input image
@@ -35,7 +43,8 @@ def similarity_search(image: UploadFile = File(...), num_matches: int = 5):
         return {"message": "no images in the mugshot db"}
 
     image = Image.open(BytesIO(image.file.read()))
-    embedding = get_embedding(image, False).squeeze()  # Fetch the normalized embedding
+    transform = strategy.value != "normal"
+    embedding = get_embedding(image, transform, strategy.value).squeeze()  # Fetch the normalized embedding
     assert embedding.ndim == 1
     similarities, ids = calc_similarity(embedding, "./Mugshot/embeddings.pt")  # Calculate similarities
     similarities, ids = similarities[:num_matches], ids[:num_matches]
