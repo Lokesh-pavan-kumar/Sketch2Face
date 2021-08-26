@@ -3,18 +3,6 @@ import torch.nn as nn
 from typing import Union
 
 
-class Grayscale:
-    def __init__(self):
-        pass
-
-    def __call__(self, sample: torch.Tensor):
-        n_channels, *_ = sample.shape  # Get the number of channels
-        if n_channels == 1:
-            sample = sample.squeeze()
-            sample = torch.stack([sample, sample, sample], 0)  # 3 Channeled grayscale image
-        return sample
-
-
 class SiameseNetwork(nn.Module):
     def __init__(self, encoder_network: nn.Module = None, emb_dim: int = 512,
                  freeze: bool = False) -> None:
@@ -105,6 +93,18 @@ class ConvBlock(nn.Module):
         return self.block(x)
 
 
+class Grayscale:
+    def __init__(self):
+        pass
+
+    def __call__(self, sample: torch.Tensor):
+        n_channels, *_ = sample.shape  # Get the number of channels
+        if n_channels == 1:
+            sample = sample.squeeze()
+            sample = torch.stack([sample, sample, sample], 0)  # 3 Channeled grayscale image
+        return sample
+
+
 def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim.Optimizer = None, lr: float = None,
                  **kwargs):
     checkpoint = torch.load(filename, map_location="cpu")
@@ -120,3 +120,11 @@ def load_network(filename: str, network: torch.nn.Module, optimizer: torch.optim
     print(f'Loaded model from {filename}')
 
     return meta_data
+
+# # Testing the implementation
+# if __name__ == '__main__':
+#     input_ = torch.randn(5, 3, 256, 256)
+#     network = SiameseNetwork(None, 512)
+#     output = network(input_)
+#     print(output.shape)
+#     assert output.shape == torch.Size([5, 512])

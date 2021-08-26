@@ -5,7 +5,7 @@ from io import BytesIO
 from PIL import Image
 
 from utils import save_embeddings, add_embedding, calc_similarity
-from config import transform, siamese_network, mugshot_path, emb_loc, image_exts
+from config import transform, siamese_normal, mugshot_path, emb_loc, image_exts, get_embedding
 
 app = FastAPI(title="Sketch2Face",
               description="API Endpoints for Sketch2Face")
@@ -34,12 +34,9 @@ def similarity_search(image: UploadFile = File(...), num_matches: int = 5):
     if len(image_names) == 0:  # If there are no images in the mugshot db
         return {"message": "no images in the mugshot db"}
 
-    image = transform(Image.open(BytesIO(image.file.read())))  # To torch.Tensor
-    if image.ndim == 3:
-        image = image.unsqueeze(0)  # Add fake batch-dim
-    embedding = siamese_network.encode_samples(image).squeeze()  # Get the embedding
+    image = Image.open(BytesIO(image.file.read()))
+    embedding = get_embedding(image, False).squeeze()  # Fetch the normalized embedding
     assert embedding.ndim == 1
-    embedding = embedding / embedding.norm()  # Normalize the embedding
     similarities, ids = calc_similarity(embedding, "./Mugshot/embeddings.pt")  # Calculate similarities
     similarities, ids = similarities[:num_matches], ids[:num_matches]
     result = []  # contains the final output json
@@ -62,10 +59,10 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
         content = await image.read()  # async read
         await out_image.write(content)  # async write
     if not emb_loc.exists():  # embedding file not present, rename, calc and save embeddings
-        background_task.add_task(save_embeddings, network=siamese_network, in_path=str(mugshot_path),
+        background_task.add_task(save_embeddings, network=siamese_normal, in_path=str(mugshot_path),
                                  out_file="./Mugshot/embeddings")
     else:  # embedding file present, append to the embedding
-        background_task.add_task(add_embedding, network=siamese_network, img_path=img_name, out_file=str(emb_loc))
+        background_task.add_task(add_embedding, network=siamese_normal, img_path=img_name, out_file=str(emb_loc))
     return {"result": "Success", "filename": f"mugshot_{curr_count}.{extension}"}
 
 
