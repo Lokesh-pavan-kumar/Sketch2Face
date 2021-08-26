@@ -1,2 +1,2 @@
 # Sketch2Face
-BTech Project @IIIT Sricity
+Bachelor's capstone - IIIT Sricity
