@@ -1,6 +1,7 @@
 import aiofiles
 from fastapi import FastAPI, BackgroundTasks
 from fastapi import File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from io import BytesIO
 from PIL import Image
 from enum import Enum
@@ -11,6 +12,22 @@ from config import siamese_normal, mugshot_path, emb_loc, image_exts, get_embedd
 app = FastAPI(title="Sketch2Face",
               description="API Endpoints for Sketch2Face")
 
+
+origins = [
+    "http://localhost",
+    "http://127.0.0.1:8000",
+    "http://localhost:4200",
+    "http://localhost:4000",
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Strategy(str, Enum):
     normal = "normal"
