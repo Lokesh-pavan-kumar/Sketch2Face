@@ -1,3 +1,4 @@
+from typing import List
 import aiofiles
 from fastapi import FastAPI, BackgroundTasks
 from fastapi import File, UploadFile
@@ -99,3 +100,14 @@ def mugshot_details():
     """
     img_count = len([f_name for f_name in mugshot_path.iterdir() if f_name.is_file() and f_name.suffix in image_exts])
     return {"image_count": img_count}
+
+
+@app.get('/mugshot-images/')
+def view_samples(n_samples: int = None) -> List[str]:
+    """
+    Returns the URLs of images from the mugshot database, limited by the `n_samples` number of samples
+    """
+    image_urls = [f_name.absolute() for f_name in mugshot_path.iterdir() if f_name.is_file() and f_name.suffix in image_exts]
+    if n_samples is not None:
+        return image_urls[:n_samples]
+    return image_urls
