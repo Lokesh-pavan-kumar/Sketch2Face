@@ -64,7 +64,7 @@ def similarity_search(*, image: UploadFile = File(...), strategy: Strategy, num_
     transform = strategy.value != "normal"
     embedding = get_embedding(image, transform, strategy.value).squeeze()  # Fetch the normalized embedding
     assert embedding.ndim == 1
-    similarities, ids = calc_similarity(embedding, "./Mugshot/embeddings.pt")  # Calculate similarities
+    similarities, ids = calc_similarity(embedding, str(emb_loc))  # Calculate similarities
     similarities, ids = similarities[:num_matches], ids[:num_matches]
     result = []  # contains the final output json
     for idx in range(min(num_matches, len(image_names))):
@@ -81,13 +81,13 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
     curr_count = len([f_name for f_name in mugshot_path.iterdir() if
                       f_name.is_file() and f_name.suffix in image_exts])  # Current count of samples in the db
     extension = image.filename.split(".")[1]  # get file extension
-    img_name = f"./Mugshot/mugshot_{curr_count}.{extension}"
+    img_name = f"{str(mugshot_path)}/mugshot_{curr_count}.{extension}"
     async with aiofiles.open(img_name, "wb") as out_image:
         content = await image.read()  # async read
         await out_image.write(content)  # async write
     if not emb_loc.exists():  # embedding file not present, rename, calc and save embeddings
         background_task.add_task(save_embeddings, network=siamese_normal, in_path=str(mugshot_path),
-                                 out_file="./Mugshot/embeddings")
+                                 out_file="../app/public/Mugshot/embeddings")
     else:  # embedding file present, append to the embedding
         background_task.add_task(add_embedding, network=siamese_normal, img_path=img_name, out_file=str(emb_loc))
     return {"result": "Success", "filename": f"mugshot_{curr_count}.{extension}"}
