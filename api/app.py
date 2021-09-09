@@ -13,7 +13,6 @@ from config import siamese_normal, mugshot_path, emb_loc, image_exts, get_embedd
 app = FastAPI(title="Sketch2Face",
               description="API Endpoints for Sketch2Face")
 
-
 origins = [
     "http://localhost",
     "http://127.0.0.1:8000",
@@ -29,6 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class Strategy(str, Enum):
     normal = "normal"
@@ -81,7 +81,7 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
     curr_count = len([f_name for f_name in mugshot_path.iterdir() if
                       f_name.is_file() and f_name.suffix in image_exts])  # Current count of samples in the db
     extension = image.filename.split(".")[1]  # get file extension
-    img_name = f"./Mugshot/mugshot_{curr_count+1}.{extension}"
+    img_name = f"./Mugshot/mugshot_{curr_count + 1}.{extension}"
     async with aiofiles.open(img_name, "wb") as out_image:
         content = await image.read()  # async read
         await out_image.write(content)  # async write
@@ -90,7 +90,7 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
                                  out_file="./Mugshot/embeddings")
     else:  # embedding file present, append to the embedding
         background_task.add_task(add_embedding, network=siamese_normal, img_path=img_name, out_file=str(emb_loc))
-    return {"result": "Success", "filename": img_name"}
+    return {"result": "Success", "filename": img_name}
 
 
 @app.get("/details/")
@@ -107,7 +107,8 @@ def view_samples(n_samples: int = None) -> List[str]:
     """
     Returns the URLs of images from the mugshot database, limited by the `n_samples` number of samples
     """
-    image_urls = [f_name.absolute() for f_name in mugshot_path.iterdir() if f_name.is_file() and f_name.suffix in image_exts]
+    image_urls = [f_name.absolute() for f_name in mugshot_path.iterdir() if
+                  f_name.is_file() and f_name.suffix in image_exts]
     if n_samples is not None:
         return image_urls[:n_samples]
     return image_urls
