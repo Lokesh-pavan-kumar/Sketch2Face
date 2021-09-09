@@ -81,7 +81,7 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
     curr_count = len([f_name for f_name in mugshot_path.iterdir() if
                       f_name.is_file() and f_name.suffix in image_exts])  # Current count of samples in the db
     extension = image.filename.split(".")[1]  # get file extension
-    img_name = f"./Mugshot/mugshot_{curr_count}.{extension}"
+    img_name = f"./Mugshot/mugshot_{curr_count+1}.{extension}"
     async with aiofiles.open(img_name, "wb") as out_image:
         content = await image.read()  # async read
         await out_image.write(content)  # async write
@@ -90,7 +90,7 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
                                  out_file="./Mugshot/embeddings")
     else:  # embedding file present, append to the embedding
         background_task.add_task(add_embedding, network=siamese_normal, img_path=img_name, out_file=str(emb_loc))
-    return {"result": "Success", "filename": f"mugshot_{curr_count}.{extension}"}
+    return {"result": "Success", "filename": img_name"}
 
 
 @app.get("/details/")
