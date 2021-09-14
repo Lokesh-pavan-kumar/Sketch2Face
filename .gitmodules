@@ -1,0 +1,3 @@
+[submodule "s2f-app"]
+	path = s2f-app
+	url = https://github.com/Lokesh-pavan-kumar/s2f-app.git

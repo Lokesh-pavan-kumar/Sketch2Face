@@ -35,8 +35,8 @@ transform = T.Compose([
 ])
 
 # mugshot and embedding file details
-mugshot_path = Path("./Mugshot")
-emb_loc = Path("./Mugshot/embeddings.pt")  # location of the embedding file
+mugshot_path = Path("../s2f-app/public/Mugshot")
+emb_loc = Path("../s2f-app/public/Mugshot/embeddings.pt")  # location of the embedding file
 
 # misc
 image_exts = [".png", ".jpg", ".jpeg", ".tif", ".bmp"]
