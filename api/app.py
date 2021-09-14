@@ -87,7 +87,7 @@ async def add_image(background_task: BackgroundTasks, image: UploadFile = File(.
         await out_image.write(content)  # async write
     if not emb_loc.exists():  # embedding file not present, rename, calc and save embeddings
         background_task.add_task(save_embeddings, network=siamese_normal, in_path=str(mugshot_path),
-                                 out_file="../app/public/Mugshot/embeddings")
+                                 out_file="../s2f-app/public/Mugshot/embeddings")
     else:  # embedding file present, append to the embedding
         background_task.add_task(add_embedding, network=siamese_normal, img_path=img_name, out_file=str(emb_loc))
     return {"result": "Success", "filename": f"mugshot_{curr_count + 1}.{extension}"}
